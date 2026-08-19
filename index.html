@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Unificar PDFs — Nortcon</title>
+<link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAMAAABg3Am1AAAAeFBMVEX////+/v79/f38/Pz5+fnz8fD56N3s6+vo6Ojm5eXi4uLg4ODv1sXb29vT0tLQz8/Pzs7RysbJycnEw8O6ubm2s7Gvr6+rqqqopqX1ij22loGWlZWIh4d+fX54dnaea0draWlgYWJcW1tUUlJLSEhEQ0MtKyslIyO9spIKAAABGElEQVR42u2SDW6EIBCFR1nEEUWiiLCIxb96/xuWdeNu016gTfwSSB7DmyEvAFxcXPxxKlHXspayzH7X0riSn4fz/nlgLRQ0QQJNE7s0lAvBQbS3pwaCp2EdGeY5t9GwrBBkGIZQrWZV89T64PhD57uh08vgH7u1HwHG2cVqHOrG3sPQsRVAxYuTG2c9vg0ppXdbTjMs+bKphYvFhKBJ6Nkm8nZ9aC/28G3C3doSosFBPYL2XlYGHRgJrR+o8r4pDDhzGjafWRsTCvORyCsU+gyJkEPd3imZDsuSIpumeJoSIGmaJiTpjFa6N6pRWpvOuF6frawNR6zxkeTVJQFWISIvkGKBrCg4srOWZZWM1DH15PrGFxf/my93sxYZy3YHZwAAAABJRU5ErkJggg==">
+<style>
+  :root {
+    --bg: #f5f5f7;
+    --panel: #ffffff;
+    --border: #e2e2e6;
+    --text: #1d1d1f;
+    --text-muted: #6e6e73;
+    --accent: #ff6600;
+    --accent-hover: #d95700;
+    --danger: #c0392b;
+    --success: #1e7e34;
+    --radius: 12px;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    display: flex;
+    justify-content: center;
+    padding: 40px 16px;
+  }
+  .wrap {
+    width: 100%;
+    max-width: 640px;
+  }
+  .brand {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+  }
+  .brand img {
+    height: 48px;
+    width: auto;
+  }
+  h1 {
+    font-size: 22px;
+    font-weight: 600;
+    margin: 0 0 4px;
+  }
+  p.subtitle {
+    color: var(--text-muted);
+    margin: 0 0 24px;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  .panel {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+  }
+  .lib-banner {
+    border-radius: 8px;
+    padding: 12px 14px;
+    font-size: 13px;
+    line-height: 1.6;
+    margin-bottom: 16px;
+  }
+  .lib-banner.error {
+    background: #fdecea;
+    border: 1px solid #f3b4ac;
+    color: #7a2018;
+  }
+  .lib-banner.error strong { display: block; margin-bottom: 4px; font-size: 14px; }
+  .lib-banner button {
+    margin-top: 8px;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 8px 14px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  #dropzone {
+    border: 2px dashed var(--border);
+    border-radius: var(--radius);
+    padding: 36px 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s;
+  }
+  #dropzone.dragover {
+    border-color: var(--accent);
+    background: #fff2e8;
+  }
+  #dropzone .icon {
+    font-size: 32px;
+    margin-bottom: 8px;
+  }
+  #dropzone .main-text {
+    font-size: 15px;
+    font-weight: 500;
+  }
+  #dropzone .sub-text {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-top: 4px;
+  }
+  input[type="file"] { display: none; }
+
+  #fileList {
+    list-style: none;
+    margin: 20px 0 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  #fileList li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 12px;
+    cursor: grab;
+  }
+  #fileList li.dragging { opacity: 0.4; }
+  .drag-handle {
+    color: var(--text-muted);
+    font-size: 14px;
+    user-select: none;
+  }
+  .file-info {
+    flex: 1;
+    min-width: 0;
+  }
+  .file-name {
+    font-size: 14px;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .file-meta {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+  .file-meta.error { color: var(--danger); }
+  .icon-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--text-muted);
+    font-size: 17px;
+    line-height: 1;
+    padding: 8px 10px;
+    border-radius: 6px;
+    min-width: 36px;
+    min-height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .icon-btn:hover { background: #e6e6ea; color: var(--text); }
+  .move-btns { display: flex; flex-direction: column; gap: 2px; }
+  .move-btns button { font-size: 13px; padding: 4px 8px; min-width: 32px; min-height: 26px; }
+
+  .actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 20px;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .actions .summary {
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+  button.primary {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 13px 22px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s;
+    min-height: 46px;
+  }
+  button.primary:hover:not(:disabled) { background: var(--accent-hover); }
+  button.primary:disabled { background: #f3c298; cursor: not-allowed; }
+  button.secondary {
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 18px;
+    font-size: 14px;
+    color: var(--text);
+    cursor: pointer;
+    min-height: 46px;
+  }
+  button.secondary:hover { background: var(--bg); }
+
+  #status {
+    margin-top: 14px;
+    font-size: 13px;
+    min-height: 18px;
+  }
+  #status.error { color: var(--danger); }
+  #status.success { color: var(--success); }
+
+  .filename-row {
+    margin-top: 20px;
+  }
+  .filename-row label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+  }
+  .filename-input {
+    display: flex;
+    align-items: center;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    background: var(--bg);
+  }
+  .filename-input input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    padding: 12px;
+    font-size: 16px;
+    color: var(--text);
+    outline: none;
+    min-width: 0;
+  }
+  .filename-input .ext {
+    padding: 12px 12px 12px 0;
+    color: var(--text-muted);
+    font-size: 16px;
+  }
+
+  footer {
+    margin-top: 20px;
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.6;
+    text-align: center;
+  }
+
+  @media (max-width: 480px) {
+    body { padding: 20px 12px; }
+    .brand img { height: 40px; }
+    h1 { font-size: 19px; }
+    p.subtitle { font-size: 13px; }
+    .panel { padding: 16px; }
+    #dropzone { padding: 26px 12px; }
+    #dropzone .main-text { font-size: 14px; }
+    .actions {
+      flex-direction: column;
+      align-items: stretch;
+    }
+    .actions .summary { text-align: center; }
+    .actions > div:last-child {
+      display: flex;
+      gap: 8px;
+    }
+    .actions > div:last-child button { flex: 1; }
+    #fileList li { padding: 8px 10px; gap: 6px; }
+    .file-name { font-size: 13px; }
+  }
+</style>
+</head>
+<body>
+<noscript>
+  <div style="max-width:640px;margin:40px auto;padding:16px 20px;border:1px solid #f3b4ac;background:#fdecea;color:#7a2018;border-radius:8px;font-family:sans-serif;font-size:14px;line-height:1.6;">
+    <strong style="display:block;margin-bottom:6px;">O JavaScript não está ativo neste visualizador.</strong>
+    Esta ferramenta precisa rodar dentro de um navegador de verdade (Safari ou Chrome), não numa pré-visualização de arquivo/e-mail/app.
+    No iPhone: toque em compartilhar e escolha "Abrir no Safari". No Android: abra pelo gerenciador de arquivos com "Abrir com Chrome".
+  </div>
+</noscript>
+<div class="wrap">
+  <div class="brand">
+    <img src="data:image/png;base64,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" alt="Nortcon Gestão Contábil">
+  </div>
+  <h1>Unificar PDFs</h1>
+  <p class="subtitle">Arraste os arquivos, ajuste a ordem e gere um único PDF. Tudo acontece aqui no seu navegador — nenhum arquivo é enviado para nenhum servidor.</p>
+
+  <div class="panel">
+    <div id="libBanner" class="lib-banner" style="display:none;"></div>
+    <div id="dropzone">
+      <div class="icon">📄</div>
+      <div class="main-text">Arraste os PDFs aqui ou clique para escolher</div>
+      <div class="sub-text">Você pode soltar vários arquivos de uma vez</div>
+      <input type="file" id="fileInput" accept="application/pdf,.pdf" multiple>
+    </div>
+
+    <ul id="fileList"></ul>
+
+    <div class="filename-row" id="filenameRow" style="display:none;">
+      <label for="outputName">Nome do arquivo final</label>
+      <div class="filename-input">
+        <input type="text" id="outputName" value="unificado" spellcheck="false">
+        <span class="ext">.pdf</span>
+      </div>
+    </div>
+
+    <div class="actions">
+      <div class="summary" id="summary"></div>
+      <div style="display:flex; gap:8px;">
+        <button class="secondary" id="clearBtn" type="button" style="display:none;">Limpar</button>
+        <button class="primary" id="mergeBtn" type="button" disabled>Unificar e baixar</button>
+      </div>
+    </div>
+
+    <div id="status"></div>
+  </div>
+
+  <footer>
+    Processamento 100% local no navegador (usa a biblioteca pdf-lib). Nenhum PDF é enviado pela internet — apenas a biblioteca é carregada uma vez ao abrir a página.<br>
+    No Chrome, Edge ou Opera, o botão abre a janela nativa "Salvar como" para você escolher a pasta e o nome. Em navegadores sem esse suporte (ex: Firefox, Safari), o arquivo é salvo com o nome escolhido na pasta padrão de downloads.
+  </footer>
+</div>
+
+<script>
+// IMPORTANT: this whole block must not depend on PDFLib having loaded
+// successfully — the library is fetched dynamically (see loadLibrary()
+// below) using whatever internet connection the device has when the page
+// opens, with a visible loading/error state and a manual retry button, so
+// the page never sits there silently doing nothing.
+const LIB_URL = 'https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js';
+let libState = 'loading'; // 'loading' | 'ready' | 'error'
+
+function getPDFDocument() {
+  if (libState !== 'ready') {
+    throw new Error('BIBLIOTECA_NAO_CARREGADA');
+  }
+  return PDFLib.PDFDocument;
+}
+
+const dropzone = document.getElementById('dropzone');
+const fileInput = document.getElementById('fileInput');
+const fileListEl = document.getElementById('fileList');
+const mergeBtn = document.getElementById('mergeBtn');
+const clearBtn = document.getElementById('clearBtn');
+const summaryEl = document.getElementById('summary');
+const statusEl = document.getElementById('status');
+const filenameRow = document.getElementById('filenameRow');
+const outputNameInput = document.getElementById('outputName');
+const supportsSavePicker = 'showSaveFilePicker' in window;
+
+// Each item: { id, file, name, sizeLabel, pageCount, error }
+let items = [];
+let idCounter = 0;
+let dragSrcId = null;
+
+function formatSize(bytes) {
+  if (bytes < 1024) return bytes + ' B';
+  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(0) + ' KB';
+  return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+}
+
+function setStatus(msg, type) {
+  statusEl.textContent = msg || '';
+  statusEl.className = type || '';
+}
+
+const libBanner = document.getElementById('libBanner');
+
+function showLibraryLoading() {
+  dropzone.style.opacity = '0.5';
+  dropzone.style.pointerEvents = 'none';
+  mergeBtn.disabled = true;
+  libBanner.className = 'lib-banner loading';
+  libBanner.style.display = 'block';
+  libBanner.textContent = 'Carregando o componente de PDF (usando a internet do aparelho)...';
+}
+
+function showLibraryReady() {
+  dropzone.style.opacity = '';
+  dropzone.style.pointerEvents = '';
+  libBanner.style.display = 'none';
+  render();
+}
+
+function showLibraryError() {
+  dropzone.style.opacity = '0.5';
+  dropzone.style.pointerEvents = 'none';
+  mergeBtn.disabled = true;
+  libBanner.className = 'lib-banner error';
+  libBanner.style.display = 'block';
+  libBanner.innerHTML =
+    '<strong>Não foi possível carregar o componente necessário para unificar PDFs.</strong>' +
+    'Isso costuma acontecer quando o arquivo é aberto numa pré-visualização (ex: Arquivos/Mail/WhatsApp no iPhone, ou um visualizador dentro de outro app) em vez de um navegador de verdade, ou quando não há internet no momento em que a página abriu.' +
+    '<br><br>Confira a internet do aparelho e toque no botão abaixo para tentar de novo, ou abra o arquivo direto pelo Chrome (Android) / compartilhar → "Abrir no Safari" (iPhone).' +
+    '<br><button id="retryLibBtn" type="button">Tentar carregar novamente</button>';
+  document.getElementById('retryLibBtn').addEventListener('click', loadLibrary);
+}
+
+function loadLibrary() {
+  libState = 'loading';
+  showLibraryLoading();
+  const old = document.getElementById('pdfLibScript');
+  if (old) old.remove();
+  const script = document.createElement('script');
+  script.id = 'pdfLibScript';
+  script.src = LIB_URL;
+  script.onload = () => {
+    if (typeof PDFLib !== 'undefined' && typeof PDFLib.PDFDocument !== 'undefined') {
+      libState = 'ready';
+      showLibraryReady();
+    } else {
+      libState = 'error';
+      showLibraryError();
+    }
+  };
+  script.onerror = () => {
+    libState = 'error';
+    showLibraryError();
+  };
+  document.head.appendChild(script);
+}
+
+async function addFiles(fileArray) {
+  if (libState !== 'ready') {
+    if (libState !== 'loading') showLibraryError();
+    return;
+  }
+  const pdfFiles = fileArray.filter(f => f.type === 'application/pdf' || f.name.toLowerCase().endsWith('.pdf'));
+  if (pdfFiles.length === 0) {
+    setStatus('Nenhum arquivo PDF válido encontrado.', 'error');
+    return;
+  }
+  setStatus('');
+
+  for (const file of pdfFiles) {
+    const item = {
+      id: idCounter++,
+      file,
+      name: file.name,
+      sizeLabel: formatSize(file.size),
+      pageCount: null,
+      error: null,
+    };
+    items.push(item);
+    render();
+
+    try {
+      const bytes = await file.arrayBuffer();
+      const doc = await getPDFDocument().load(bytes, { ignoreEncryption: true });
+      if (doc.isEncrypted) {
+        item.error = 'protegido por senha';
+      } else {
+        item.pageCount = doc.getPageCount();
+      }
+    } catch (e) {
+      item.error = 'não foi possível ler este PDF';
+    }
+    render();
+  }
+}
+
+function render() {
+  fileListEl.innerHTML = '';
+  items.forEach((item, index) => {
+    const li = document.createElement('li');
+    li.draggable = true;
+    li.dataset.id = item.id;
+
+    li.addEventListener('dragstart', () => {
+      dragSrcId = item.id;
+      li.classList.add('dragging');
+    });
+    li.addEventListener('dragend', () => li.classList.remove('dragging'));
+    li.addEventListener('dragover', (e) => e.preventDefault());
+    li.addEventListener('drop', (e) => {
+      e.preventDefault();
+      if (dragSrcId === null || dragSrcId === item.id) return;
+      const srcIndex = items.findIndex(i => i.id === dragSrcId);
+      const dstIndex = items.findIndex(i => i.id === item.id);
+      const [moved] = items.splice(srcIndex, 1);
+      items.splice(dstIndex, 0, moved);
+      render();
+    });
+
+    const handle = document.createElement('span');
+    handle.className = 'drag-handle';
+    handle.textContent = '⠿';
+    li.appendChild(handle);
+
+    const info = document.createElement('div');
+    info.className = 'file-info';
+    const nameEl = document.createElement('div');
+    nameEl.className = 'file-name';
+    nameEl.textContent = `${index + 1}. ${item.name}`;
+    const metaEl = document.createElement('div');
+    if (item.error) {
+      metaEl.className = 'file-meta error';
+      metaEl.textContent = `${item.sizeLabel} · ${item.error}`;
+    } else if (item.pageCount !== null) {
+      metaEl.className = 'file-meta';
+      metaEl.textContent = `${item.sizeLabel} · ${item.pageCount} página${item.pageCount === 1 ? '' : 's'}`;
+    } else {
+      metaEl.className = 'file-meta';
+      metaEl.textContent = `${item.sizeLabel} · lendo...`;
+    }
+    info.appendChild(nameEl);
+    info.appendChild(metaEl);
+    li.appendChild(info);
+
+    const moveBtns = document.createElement('div');
+    moveBtns.className = 'move-btns';
+    const upBtn = document.createElement('button');
+    upBtn.className = 'icon-btn';
+    upBtn.textContent = '▲';
+    upBtn.title = 'Mover para cima';
+    upBtn.disabled = index === 0;
+    upBtn.addEventListener('click', () => {
+      if (index === 0) return;
+      [items[index - 1], items[index]] = [items[index], items[index - 1]];
+      render();
+    });
+    const downBtn = document.createElement('button');
+    downBtn.className = 'icon-btn';
+    downBtn.textContent = '▼';
+    downBtn.title = 'Mover para baixo';
+    downBtn.disabled = index === items.length - 1;
+    downBtn.addEventListener('click', () => {
+      if (index === items.length - 1) return;
+      [items[index + 1], items[index]] = [items[index], items[index + 1]];
+      render();
+    });
+    moveBtns.appendChild(upBtn);
+    moveBtns.appendChild(downBtn);
+    li.appendChild(moveBtns);
+
+    const removeBtn = document.createElement('button');
+    removeBtn.className = 'icon-btn';
+    removeBtn.textContent = '✕';
+    removeBtn.title = 'Remover';
+    removeBtn.addEventListener('click', () => {
+      items = items.filter(i => i.id !== item.id);
+      render();
+    });
+    li.appendChild(removeBtn);
+
+    fileListEl.appendChild(li);
+  });
+
+  const validCount = items.filter(i => !i.error).length;
+  const totalPages = items.reduce((sum, i) => sum + (i.pageCount || 0), 0);
+  if (items.length === 0) {
+    summaryEl.textContent = '';
+  } else {
+    summaryEl.textContent = `${items.length} arquivo${items.length === 1 ? '' : 's'} · ${totalPages} página${totalPages === 1 ? '' : 's'} no total`;
+  }
+
+  clearBtn.style.display = items.length ? 'inline-block' : 'none';
+  filenameRow.style.display = items.length ? 'block' : 'none';
+  const stillLoading = items.some(i => i.pageCount === null && !i.error);
+  mergeBtn.disabled = stillLoading || validCount < 2;
+}
+
+dropzone.addEventListener('click', () => fileInput.click());
+dropzone.addEventListener('dragover', (e) => {
+  e.preventDefault();
+  dropzone.classList.add('dragover');
+});
+dropzone.addEventListener('dragleave', () => dropzone.classList.remove('dragover'));
+dropzone.addEventListener('drop', (e) => {
+  e.preventDefault();
+  dropzone.classList.remove('dragover');
+  addFiles(Array.from(e.dataTransfer.files));
+});
+fileInput.addEventListener('change', () => {
+  addFiles(Array.from(fileInput.files));
+  fileInput.value = '';
+});
+
+clearBtn.addEventListener('click', () => {
+  items = [];
+  render();
+  setStatus('');
+});
+
+function resolveOutputName() {
+  let name = (outputNameInput.value || '').trim();
+  if (!name) name = 'unificado';
+  // remove characters that are invalid in file names on Windows/Mac
+  name = name.replace(/[\\/:*?"<>|]/g, '-');
+  if (!/\.pdf$/i.test(name)) name += '.pdf';
+  return name;
+}
+
+mergeBtn.addEventListener('click', async () => {
+  if (libState !== 'ready') {
+    if (libState !== 'loading') showLibraryError();
+    return;
+  }
+  const valid = items.filter(i => !i.error);
+  if (valid.length < 2) {
+    setStatus('Adicione pelo menos 2 arquivos PDF válidos.', 'error');
+    return;
+  }
+
+  const filename = resolveOutputName();
+
+  // Ask where to save FIRST (must happen synchronously within the click
+  // gesture, before any lengthy async work) so the browser's native
+  // "Salvar como" dialog can be shown when supported.
+  let fileHandle = null;
+  if (supportsSavePicker) {
+    try {
+      fileHandle = await window.showSaveFilePicker({
+        suggestedName: filename,
+        types: [{ description: 'PDF', accept: { 'application/pdf': ['.pdf'] } }],
+      });
+    } catch (e) {
+      if (e && e.name === 'AbortError') {
+        setStatus('Cancelado.', '');
+        return;
+      }
+      // Some browsers throw for reasons other than user cancellation;
+      // fall back to the regular download in that case.
+      fileHandle = null;
+    }
+  }
+
+  mergeBtn.disabled = true;
+  setStatus('Unindo arquivos...', '');
+
+  try {
+    const PDFDocument = getPDFDocument();
+    const mergedDoc = await PDFDocument.create();
+    for (const item of valid) {
+      const bytes = await item.file.arrayBuffer();
+      const donorDoc = await PDFDocument.load(bytes, { ignoreEncryption: true });
+      const pages = await mergedDoc.copyPages(donorDoc, donorDoc.getPageIndices());
+      pages.forEach(p => mergedDoc.addPage(p));
+    }
+    const mergedBytes = await mergedDoc.save();
+
+    if (fileHandle) {
+      const writable = await fileHandle.createWritable();
+      await writable.write(mergedBytes);
+      await writable.close();
+    } else {
+      const blob = new Blob([mergedBytes], { type: 'application/pdf' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    const savedNote = fileHandle
+      ? ''
+      : ' (salvo na pasta de downloads padrão do navegador — este navegador não permite escolher a pasta)';
+    setStatus(`"${filename}" gerado com sucesso (${mergedDoc.getPageCount()} páginas)${savedNote}.`, 'success');
+  } catch (e) {
+    console.error(e);
+    setStatus('Ocorreu um erro ao unificar os PDFs: ' + e.message, 'error');
+  } finally {
+    render();
+  }
+});
+
+render();
+loadLibrary();
+</script>
+</body>
+</html>
