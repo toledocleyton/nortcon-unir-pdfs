@@ -5,6 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Unificar PDFs — Nortcon</title>
 <link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAMAAABg3Am1AAAAeFBMVEX////+/v79/f38/Pz5+fnz8fD56N3s6+vo6Ojm5eXi4uLg4ODv1sXb29vT0tLQz8/Pzs7RysbJycnEw8O6ubm2s7Gvr6+rqqqopqX1ij22loGWlZWIh4d+fX54dnaea0draWlgYWJcW1tUUlJLSEhEQ0MtKyslIyO9spIKAAABGElEQVR42u2SDW6EIBCFR1nEEUWiiLCIxb96/xuWdeNu016gTfwSSB7DmyEvAFxcXPxxKlHXspayzH7X0riSn4fz/nlgLRQ0QQJNE7s0lAvBQbS3pwaCp2EdGeY5t9GwrBBkGIZQrWZV89T64PhD57uh08vgH7u1HwHG2cVqHOrG3sPQsRVAxYuTG2c9vg0ppXdbTjMs+bKphYvFhKBJ6Nkm8nZ9aC/28G3C3doSosFBPYL2XlYGHRgJrR+o8r4pDDhzGjafWRsTCvORyCsU+gyJkEPd3imZDsuSIpumeJoSIGmaJiTpjFa6N6pRWpvOuF6frawNR6zxkeTVJQFWISIvkGKBrCg4srOWZZWM1DH15PrGFxf/my93sxYZy3YHZwAAAABJRU5ErkJggg==">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0BAMAAADP4xsBAAAAMFBMVEX///////79/f339PLCt7HSez7/aAH/ZgL/ZgDCZylwQiQkISAhHx8gIiQgHh4aHCDyVNUiAAAFT0lEQVR42u2az4/bRBTHv+OuhKiKPU4vLVIdb1VES1lUaKuqantBKtUekNoTQgL+g13aCycunBCIbf8DuFfdtpxpS7tHFJONuSA1iZ11JMSP2JPsSkjVZoaD7SReaOwkEwHSfC8bOfEn35335r036wWUlJSUlJSUlJSUlP4HInsvHJ0a1fwXXZ+hkzMoAIg7ey4v7P3c4ev2ZGCOBz4AaMhDizcnXeI3qgCAfbnoiaOxva7ZANDKR2uTLUjf+PQ5N2iz5kH7+y7mhD7SWJwXWncxJzRZt+eE5geqmBM6eNSbE5qXG/a8XB9wn//ewmzr8fOY/TWTa/56FXNyXdvtlSZGc/JeAfSL79tTuPZ3H+ejbz+aBg0tv0lu9ce+/Vw0534O2X6nOrb+Tp8hWvBxbzrX+SXvtc74Dj29a3p9I4O2paG1dj8L86UtiHUyyobdlOVaC25mK1PrlCzX9iEnsx78zFVJrklIN7M18NhjWeidlWxSn71IJS2IddIbRfGdT0JJeU2Cm+4ounWWydqN5vFMEPnBd3uydqNOM5kXXHZlbXStvTK6APyti7YstHXFszOJ95Os8pTdicK/fMmWVVSNE6NBjEpXmbSiSkd3omBnN6XVaxKsjEzrHt9l0tDGFW84rXNRJdK6DNm+5Y6c7MJNeb2xvH8kiL2OQ6X1RqJ9Nhz0uP50i0lDm1v6sF6w5mMqoaMnvU9fHk7rgtUXmQR0lGTeWm14qb/hSZhD6OnY6KvOIPNE5FgyRhx6Pf65OAii8ELXl4AutSkBoC2sDoIYibGmC+e1fsEWAKylQRA5/aElJMx8WvBRFYAWrLnDxHtiyJhU6SFxPzvYCFYp+zLQfJGFAIFZTc9FUcflkDAEk51bm6DA1iCIzahh5dxUzLWxVAEoKy+l07pAmGe6mGtycHWTMpBgLZ3Wu3zdggy02dUZAPNcGkQR1s28U1SxBdGXGtRG1zDTaT3iGxwyXGvB2hYA0k5nBBFVrPzbiri2XnZo+MynF9L18PJjWMw16ZoRQHuDndgUDQty0NurNVDgXCMu+8Lu1Hw5aH25s4gWLDOZ1r3mXQNS0GQ7Xoj21/G0LlCnrAg6P4zm8QYFIJYf2sUTr5BropseAA0fxkHkUaUMSej2PRcAXniJAQBnoetJQlvn120O4Fo8rfeiQolXBE22V6qiBxDuxsXj90KJVwj9p9HthoB9z45j+K2AJLT+dqMcRh5nPybjEoUktLZz09V4S2j9XjIuFTadl9fWEafcrGMRpgmAR07Zk+SasNVqxJ9g2LWKk3PQ5oLeZZUyiVtA13N0yELr5ztG34VIutbTFpOFJsFaLXKs5FMRf2JMQB4fRnrCiUKX2zRNvAiyXIsbkWhYYGAAxCSJl+da29G/G3RBvz9J4uW5tpY7wrEQe7bC2mTkca614MsHnXiEpvCEU/ZnRItOJ/lt6PFdfpcyEEIh8LQbYUY0iQ9xBITuv/9bOi9Nmnj/iObJo0wmgqP6HR5/TYiK7c2M/vWLBO2f1upGYpo2XB0zo51BFDev3U15UcPyZ0enfyuO9Ff+SHm0UxOYHT3Ig57xKJ03+EODSUCT9JzcGphGnUSQgDbSh937XJ48nOYbtjmmPBZFa9u34xfPPrD9NBHHPlvfVxTNz6QFlTB6rFD7PtUruCClCgNAcEmAHv6mSMqVSkXLU+8oAMR7T5v+v0XyeiPH3NBQaIVW6LyNrjeHldKXi46rTVxDJikh9Xx0BABCfGX7FOMflGfFctGhk541wH75HP9N/a2zlZLOErLh62JqQklJSUlJSUlJSUlJaVR/AbwMARP+s8jMAAAAAElFTkSuQmCC">
+<meta name="theme-color" content="#ff6600">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Unificar PDFs">
 <style>
   :root {
     --bg: #f5f5f7;
@@ -81,6 +88,40 @@
     font-size: 13px;
     font-weight: 600;
     cursor: pointer;
+  }
+  .install-banner {
+    display: none;
+    align-items: center;
+    gap: 10px;
+    background: #eef6ff;
+    border: 1px solid #bcdcff;
+    color: #0b3d66;
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 13px;
+    line-height: 1.5;
+    margin-bottom: 16px;
+  }
+  .install-banner span { flex: 1; }
+  .install-banner button.install-action {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 8px 12px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .install-banner button.install-dismiss {
+    background: none;
+    border: none;
+    color: #0b3d66;
+    cursor: pointer;
+    font-size: 15px;
+    padding: 4px 6px;
+    line-height: 1;
   }
   #dropzone {
     border: 2px dashed var(--border);
@@ -296,6 +337,11 @@
   <p class="subtitle">Arraste os arquivos, ajuste a ordem e gere um único PDF. Tudo acontece aqui no seu navegador — nenhum arquivo é enviado para nenhum servidor.</p>
 
   <div class="panel">
+    <div id="installBanner" class="install-banner">
+      <span id="installText"></span>
+      <button id="installBtn" class="install-action" type="button" style="display:none;">Instalar app</button>
+      <button id="installDismiss" class="install-dismiss" type="button" title="Fechar">✕</button>
+    </div>
     <div id="libBanner" class="lib-banner" style="display:none;"></div>
     <div id="dropzone">
       <div class="icon">📄</div>
@@ -679,6 +725,61 @@ mergeBtn.addEventListener('click', async () => {
 
 render();
 loadLibrary();
+
+// --- Instalar como app (PWA) + funcionamento offline após o 1º carregamento ---
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').catch(() => {
+      // Se falhar (ex: aberto como arquivo local em vez de site), a página
+      // continua funcionando normalmente, só não terá o modo offline.
+    });
+  });
+}
+
+(function setupInstallBanner() {
+  const installBanner = document.getElementById('installBanner');
+  const installText = document.getElementById('installText');
+  const installBtn = document.getElementById('installBtn');
+  const installDismiss = document.getElementById('installDismiss');
+  let deferredPrompt = null;
+
+  function isStandalone() {
+    return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+  }
+  function isIOS() {
+    return /iphone|ipad|ipod/i.test(navigator.userAgent);
+  }
+
+  if (isStandalone()) return; // já instalado, não mostrar nada
+
+  if (isIOS()) {
+    installText.textContent = 'Instale este app no seu iPhone: toque em Compartilhar e depois em "Adicionar à Tela de Início".';
+    installBanner.style.display = 'flex';
+  } else {
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      installText.textContent = 'Instale este app para abrir mais rápido e usar mesmo sem internet.';
+      installBtn.style.display = 'inline-block';
+      installBanner.style.display = 'flex';
+    });
+    window.addEventListener('appinstalled', () => {
+      installBanner.style.display = 'none';
+    });
+  }
+
+  installBtn.addEventListener('click', async () => {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    await deferredPrompt.userChoice;
+    deferredPrompt = null;
+    installBanner.style.display = 'none';
+  });
+
+  installDismiss.addEventListener('click', () => {
+    installBanner.style.display = 'none';
+  });
+})();
 </script>
 </body>
 </html>
